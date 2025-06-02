@@ -7,7 +7,13 @@
     >
       <div
         class="grow w-full h-full lg:pr-[30vw] px-6 py-4 flex flex-col"
-      ></div>
+      >
+        <div v-if="game.versions.length === 0" class="flex flex-col items-center justify-center h-full text-zinc-400">
+          <InformationCircleIcon class="w-12 h-12 mb-2 text-zinc-400" />
+          <div class="font-semibold text-lg">No versions yet</div>
+          <div class="text-sm mt-1">Import your first version to get started!</div>
+        </div>
+      </div>
       <div
         class="lg:overflow-y-auto lg:border-l lg:border-zinc-800 lg:fixed lg:inset-y-0 lg:z-50 lg:w-[30vw] flex flex-col lg:right-0 gap-y-8 px-6 py-4"
       >
@@ -135,6 +141,7 @@ import {
   ArrowTopRightOnSquareIcon,
   Bars3Icon,
   TrashIcon,
+  InformationCircleIcon,
 } from "@heroicons/vue/24/solid";
 
 definePageMeta({
