@@ -298,7 +298,7 @@
     />
     <ModalTemplate v-model="showAddCarouselModal">
       <template #default>
-        <div class="grid grid-cols-2 grid-flow-dense gap-4">
+        <div class="grid grid-cols-2 grid-flow-dense gap-4 max-h-[70vh] overflow-y-auto p-4">
           <div
             v-for="(image, imageIdx) in validAddCarouselImages"
             :key="imageIdx"
@@ -332,7 +332,7 @@
           class="mt-3 inline-flex w-full justify-center rounded-md bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-100 shadow-sm ring-1 ring-inset ring-zinc-700 hover:bg-zinc-950 sm:mt-0 sm:w-auto"
           @click="showAddCarouselModal = false"
         >
-          Cancel
+          Close
         </button>
       </template>
     </ModalTemplate>
@@ -713,7 +713,6 @@ async function uploadAfterImageUpload(result: Game) {
 }
 
 function addImageToCarousel(id: string) {
-  showAddCarouselModal.value = false;
   game.value.mImageCarouselObjectIds.push(id);
   updateImageCarousel();
 }
