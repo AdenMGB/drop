@@ -8,6 +8,7 @@ import { LibraryBackend } from "~/prisma/client/enums";
 import fs from "fs";
 import path from "path";
 import droplet, { DropletHandler } from "@drop-oss/droplet";
+import { Readable } from "stream";
 
 export const FilesystemProviderConfig = type({
   baseDir: "string",
@@ -59,7 +60,7 @@ export class FilesystemProvider
     const versionDirs = fs.readdirSync(gameDir);
     const validVersionDirs = versionDirs.filter((e) => {
       const fullDir = path.join(this.config.baseDir, game, e);
-      return DROPLET_HANDLER.hasBackendForPath(fullDir);
+      return fs.lstatSync(fullDir).isDirectory(); //DROPLET_HANDLER.hasBackendForPath(fullDir);
     });
     return validVersionDirs;
   }
@@ -67,7 +68,7 @@ export class FilesystemProvider
   async versionReaddir(game: string, version: string): Promise<string[]> {
     const versionDir = path.join(this.config.baseDir, game, version);
     if (!fs.existsSync(versionDir)) throw new VersionNotFoundError();
-    return DROPLET_HANDLER.listFiles(versionDir);
+    return fs.readdirSync(versionDir); //DROPLET_HANDLER.listFiles(versionDir);
   }
 
   async generateDropletManifest(
@@ -96,8 +97,8 @@ export class FilesystemProvider
   async peekFile(game: string, version: string, filename: string) {
     const filepath = path.join(this.config.baseDir, game, version);
     if (!fs.existsSync(filepath)) return undefined;
-    const stat = DROPLET_HANDLER.peekFile(filepath, filename);
-    return { size: Number(stat) };
+    const stat = fs.lstatSync(path.join(filepath, filename)); //DROPLET_HANDLER.peekFile(filepath, filename);
+    return { size: Number(stat.size) };
   }
 
   async readFile(
@@ -108,6 +109,12 @@ export class FilesystemProvider
   ) {
     const filepath = path.join(this.config.baseDir, game, version);
     if (!fs.existsSync(filepath)) return undefined;
+    return await Readable.toWeb(fs.createReadStream(path.join(filepath, filename), {
+      start: options?.start,
+      end: options?.end,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    })) as any;
+    /*
     let stream;
     while (!(stream instanceof ReadableStream)) {
       const v = DROPLET_HANDLER.readFile(
@@ -121,5 +128,6 @@ export class FilesystemProvider
     }
 
     return stream;
+    */
   }
 }
